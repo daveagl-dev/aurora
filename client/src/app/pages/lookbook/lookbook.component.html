@@ -1,0 +1,36 @@
+<main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+  <div class="text-center max-w-2xl mx-auto mb-16">
+    <span class="text-xs uppercase tracking-[0.4em] text-[#C5A059]">Digital Runway</span>
+    <h2 class="font-serif text-4xl sm:text-5xl font-light text-[#111] mt-2">Autumn / Winter Editorial</h2>
+    <p class="text-xs sm:text-sm text-[#666] mt-3 font-light">
+      Explore the artistic vision behind our latest Parisian showcase. Hover or tap hotspots to shop looks directly.
+    </p>
+  </div>
+
+  <div class="space-y-20">
+    @for (editorial of editorials; track editorial.id; let index = $index) {
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div [class]="'lg:col-span-8 relative h-[600px] rounded overflow-hidden shadow-2xl ' + (index % 2 === 1 ? 'lg:order-2' : '')">
+          <img [src]="editorial.image" [alt]="editorial.title" class="w-full h-full object-cover" />
+          @for (spot of editorial.hotspots; track spot.productId) {
+            <app-hotspot [spot]="spot" size="md" actionLabel="View Details" />
+          }
+        </div>
+
+        <div class="lg:col-span-4 space-y-4 px-4">
+          <span class="text-[10px] tracking-[0.3em] uppercase text-[#C5A059]">Look N° 0{{ editorial.id }}</span>
+          <h3 class="font-serif text-3xl font-light text-[#111]">{{ editorial.title }}</h3>
+          <p class="text-xs text-[#666] leading-relaxed font-light">
+            Photographed on location in Le Marais, Paris. Sculptural forms meet delicate tailoring for an effortlessly commanding presence.
+          </p>
+          <button
+            (click)="nav.goShop('All')"
+            class="bg-[#0D0D0D] text-white text-xs uppercase tracking-widest px-6 py-3 mt-4 hover:bg-[#C5A059] transition-colors"
+          >
+            Shop Entire Collection
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</main>

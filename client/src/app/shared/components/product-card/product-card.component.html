@@ -1,0 +1,56 @@
+<div class="group relative flex flex-col">
+  <div
+    class="relative h-80 sm:h-96 w-full overflow-hidden bg-[#F5F3EF] cursor-pointer rounded-sm"
+    (mouseenter)="hovered.set(true)"
+    (mouseleave)="hovered.set(false)"
+    (click)="nav.goProduct(product())"
+  >
+    <img
+      [src]="image()"
+      [alt]="product().name"
+      class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+    />
+
+    <!-- Wishlist Button -->
+    <button
+      (click)="$event.stopPropagation(); wishlist.toggle(product().id)"
+      class="absolute top-3 right-3 p-2 rounded-full bg-white/80 backdrop-blur-md text-[#111] hover:text-[#C5A059] transition-colors shadow-sm"
+      aria-label="Toggle wishlist"
+    >
+      <app-icon name="heart" [cls]="'w-4 h-4 ' + (isWishlisted() ? 'fill-[#C5A059] text-[#C5A059]' : '')" />
+    </button>
+
+    <!-- Quick View Button on Hover -->
+    <div class="absolute inset-x-3 bottom-3 hidden group-hover:flex gap-2 z-10 animate-fadeIn">
+      <button
+        (click)="$event.stopPropagation(); ui.quickViewProduct.set(product())"
+        class="flex-1 bg-white/90 backdrop-blur-md text-[#111] hover:bg-[#0D0D0D] hover:text-white py-2.5 text-[10px] uppercase tracking-widest font-semibold transition-all shadow-md"
+      >
+        Quick View
+      </button>
+    </div>
+  </div>
+
+  <!-- Product Information -->
+  <div class="pt-4 space-y-1 flex-1 flex flex-col justify-between">
+    <div>
+      <span class="text-[10px] uppercase tracking-[0.2em] text-[#888]">{{ product().category }}</span>
+      <h4
+        (click)="nav.goProduct(product())"
+        class="font-serif text-sm text-[#111] cursor-pointer hover:text-[#C5A059] transition-colors line-clamp-1"
+      >
+        {{ product().name }}
+      </h4>
+    </div>
+
+    <div class="flex items-center justify-between pt-1">
+      <span class="text-xs font-semibold text-[#111]">{{ currency.format(product().price) }}</span>
+      <button
+        (click)="cart.add(product())"
+        class="text-[10px] uppercase tracking-widest text-[#C5A059] font-semibold hover:text-black transition-colors"
+      >
+        + Add To Bag
+      </button>
+    </div>
+  </div>
+</div>

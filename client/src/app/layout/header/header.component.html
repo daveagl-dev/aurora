@@ -1,0 +1,123 @@
+<header class="sticky top-0 z-40 bg-[#FCFBFA]/85 backdrop-blur-md border-b border-[#EAE8E4] transition-all">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+    <!-- Mobile Menu Button -->
+    <div class="flex items-center lg:hidden">
+      <button
+        (click)="ui.toggleMobileMenu()"
+        class="p-2 text-[#111] hover:text-[#D4AF37] transition-colors"
+        aria-label="Toggle Menu"
+      >
+        <app-icon name="menu" cls="w-6 h-6" />
+      </button>
+    </div>
+
+    <!-- Nav Links - Left -->
+    <nav class="hidden lg:flex items-center space-x-8 text-xs font-semibold tracking-wider uppercase">
+      <button
+        (click)="nav.goHome()"
+        [class]="'hover:text-[#C5A059] transition-colors py-1 ' + (isActive('home') ? 'text-[#C5A059] border-b-2 border-[#C5A059]' : 'text-[#222]')"
+      >
+        Home
+      </button>
+      <button
+        (click)="nav.goShop('All')"
+        [class]="'hover:text-[#C5A059] transition-colors py-1 ' + (isActive('shop') ? 'text-[#C5A059] border-b-2 border-[#C5A059]' : 'text-[#222]')"
+      >
+        Collections
+      </button>
+      <button (click)="nav.goShop('Haute Couture')" class="hover:text-[#C5A059] transition-colors py-1 text-[#222]">
+        Haute Couture
+      </button>
+      <button
+        (click)="nav.goTo('lookbook')"
+        [class]="'hover:text-[#C5A059] transition-colors py-1 ' + (isActive('lookbook') ? 'text-[#C5A059] border-b-2 border-[#C5A059]' : 'text-[#222]')"
+      >
+        Lookbook
+      </button>
+    </nav>
+
+    <!-- Logo Center -->
+    <div class="text-center cursor-pointer" (click)="nav.goHome()">
+      <h1 class="font-serif text-2xl sm:text-3xl tracking-[0.25em] font-light uppercase text-[#111]">Aurora</h1>
+    </div>
+
+    <!-- Actions - Right -->
+    <div class="flex items-center space-x-5">
+      <!-- Currency Selector -->
+      <div class="hidden sm:flex items-center space-x-1 text-xs text-[#555] font-medium border-r border-[#EAE8E4] pr-4">
+        <select
+          [value]="currency.currency().code"
+          (change)="onCurrencyChange($event)"
+          class="bg-transparent border-none text-xs focus:ring-0 cursor-pointer font-sans"
+        >
+          @for (c of currency.currencies; track c.code) {
+            <option [value]="c.code" [selected]="c.code === currency.currency().code">{{ c.code }} ({{ c.symbol }})</option>
+          }
+        </select>
+      </div>
+
+      <!-- Search Button -->
+      <button
+        (click)="ui.isSearchOpen.set(true)"
+        class="p-2 text-[#222] hover:text-[#C5A059] transition-colors"
+        aria-label="Search"
+      >
+        <app-icon name="search" cls="w-5 h-5" />
+      </button>
+
+      <!-- Account Profile Button -->
+      <button
+        (click)="nav.goTo('account')"
+        [class]="'p-2 transition-colors ' + (isActive('account') ? 'text-[#C5A059]' : 'text-[#222] hover:text-[#C5A059]')"
+        aria-label="Account"
+      >
+        <app-icon name="user" cls="w-5 h-5" />
+      </button>
+
+      <!-- Wishlist Icon Badge -->
+      <button
+        (click)="ui.isWishlistOpen.set(true)"
+        class="p-2 text-[#222] hover:text-[#C5A059] transition-colors relative"
+        aria-label="Wishlist"
+      >
+        <app-icon name="heart" cls="w-5 h-5" />
+        @if (wishlist.count() > 0) {
+          <span class="absolute top-1 right-1 bg-[#C5A059] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+            {{ wishlist.count() }}
+          </span>
+        }
+      </button>
+
+      <!-- Cart Icon Badge -->
+      <button
+        (click)="ui.isCartOpen.set(true)"
+        class="p-2 text-[#222] hover:text-[#C5A059] transition-colors relative flex items-center gap-2"
+        aria-label="Shopping Bag"
+      >
+        <app-icon name="shopping-bag" cls="w-5 h-5" />
+        @if (cart.items().length > 0) {
+          <span class="bg-[#0D0D0D] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+            {{ cart.count() }}
+          </span>
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Navigation Drawer -->
+  @if (ui.isMobileMenuOpen()) {
+    <div class="lg:hidden bg-[#FCFBFA] border-b border-[#EAE8E4] px-6 py-6 space-y-4 animate-fadeIn">
+      <div class="flex justify-between items-center pb-2 border-b border-[#EAE8E4]">
+        <span class="text-xs uppercase tracking-widest text-[#888]">Navigation</span>
+        <button (click)="ui.isMobileMenuOpen.set(false)" aria-label="Close menu"><app-icon name="x" cls="w-5 h-5" /></button>
+      </div>
+      <div class="flex flex-col space-y-3 font-serif text-lg">
+        <button (click)="nav.goHome()" class="text-left py-1 hover:text-[#C5A059]">Home</button>
+        <button (click)="nav.goShop('All')" class="text-left py-1 hover:text-[#C5A059]">All Collections</button>
+        <button (click)="nav.goShop('Haute Couture')" class="text-left py-1 hover:text-[#C5A059]">Haute Couture</button>
+        <button (click)="nav.goTo('lookbook')" class="text-left py-1 hover:text-[#C5A059]">Lookbook &amp; Editorial</button>
+        <button (click)="nav.goTo('account')" class="text-left py-1 hover:text-[#C5A059]">My VIP Account</button>
+      </div>
+    </div>
+  }
+</header>

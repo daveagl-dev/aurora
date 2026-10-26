@@ -1,0 +1,151 @@
+<main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+  <!-- Breadcrumbs -->
+  <div class="text-xs text-[#888] flex items-center gap-2 mb-6 uppercase tracking-wider">
+    <span class="cursor-pointer hover:text-black" (click)="nav.goHome()">Home</span>
+    <span>/</span>
+    <span class="text-[#111] font-semibold">Collections</span>
+    @if (catalog.selectedCategory() !== 'All') {
+      <span>/</span>
+      <span class="text-[#C5A059]">{{ catalog.selectedCategory() }}</span>
+    }
+  </div>
+
+  <!-- Title Header -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 pb-6 border-b border-[#EAE8E4]">
+    <div>
+      <h2 class="font-serif text-3xl sm:text-4xl font-light text-[#111]">
+        {{ catalog.selectedCategory() === 'All' ? 'All Atelier Collections' : catalog.selectedCategory() }}
+      </h2>
+      <p class="text-xs text-[#777] mt-1 font-light">
+        Showing {{ catalog.filteredProducts().length }} handcrafted luxury pieces
+      </p>
+    </div>
+
+    <!-- Layout Controls & Sort dropdown -->
+    <div class="flex items-center gap-4 mt-4 md:mt-0 w-full md:w-auto justify-between">
+      <!-- Grid Layout Switcher -->
+      <div class="hidden sm:flex items-center gap-1 border border-[#EAE8E4] rounded p-1">
+        @for (opt of gridOptions; track opt.cols) {
+          <button
+            (click)="catalog.gridCols.set(opt.cols)"
+            [class]="'p-1.5 rounded ' + (catalog.gridCols() === opt.cols ? 'bg-[#0D0D0D] text-white' : 'text-[#888]')"
+            [attr.aria-label]="opt.cols + ' columns'"
+          >
+            <app-icon [name]="opt.icon" cls="w-4 h-4" />
+          </button>
+        }
+      </div>
+
+      <!-- Sort By -->
+      <div class="flex items-center gap-2">
+        <span class="text-xs uppercase tracking-wider text-[#888] hidden sm:inline">Sort:</span>
+        <select
+          [value]="catalog.sortBy()"
+          (change)="setSort($event)"
+          class="bg-white border border-[#EAE8E4] text-xs py-2 px-3 focus:outline-none focus:border-[#C5A059] rounded"
+        >
+          <option value="featured">Featured Runway Order</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="rating">Highest Rated</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <!-- Sidebar Filters -->
+    <div class="lg:col-span-1 space-y-8 pr-0 lg:pr-4 border-r-0 lg:border-r border-[#EAE8E4]">
+      <!-- Category Filter -->
+      <div>
+        <h4 class="text-xs uppercase tracking-[0.2em] font-semibold text-[#111] mb-4">Category</h4>
+        <div class="space-y-2">
+          @for (cat of categories; track cat) {
+            <button
+              (click)="catalog.selectedCategory.set(cat)"
+              [class]="'block w-full text-left text-xs py-1 transition-all ' + (catalog.selectedCategory() === cat ? 'text-[#C5A059] font-bold tracking-wider' : 'text-[#555] hover:text-black')"
+            >
+              {{ cat }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Price Filter -->
+      <div>
+        <div class="flex justify-between items-center mb-2">
+          <h4 class="text-xs uppercase tracking-[0.2em] font-semibold text-[#111]">Max Price</h4>
+          <span class="text-xs text-[#C5A059] font-semibold">{{ currency.format(catalog.priceRange()) }}</span>
+        </div>
+        <input
+          type="range"
+          [min]="minPrice"
+          [max]="maxPrice"
+          step="50"
+          [value]="catalog.priceRange()"
+          (input)="setPrice($event)"
+          class="w-full accent-[#C5A059] cursor-pointer"
+        />
+      </div>
+
+      <!-- Size Filter -->
+      <div>
+        <h4 class="text-xs uppercase tracking-[0.2em] font-semibold text-[#111] mb-3">Size</h4>
+        <div class="flex flex-wrap gap-2">
+          @for (sz of sizes; track sz) {
+            <button
+              (click)="catalog.toggleSize(sz)"
+              [class]="'text-xs w-9 h-9 border flex items-center justify-center transition-all ' + (catalog.selectedSizes().includes(sz) ? 'bg-[#0D0D0D] text-white border-[#0D0D0D]' : 'border-[#EAE8E4] text-[#444] hover:border-black')"
+            >
+              {{ sz }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Color Filter -->
+      <div>
+        <h4 class="text-xs uppercase tracking-[0.2em] font-semibold text-[#111] mb-3">Color Palette</h4>
+        <div class="space-y-2">
+          @for (col of colors; track col.name) {
+            <button
+              (click)="catalog.toggleColor(col.name)"
+              class="flex items-center gap-3 w-full text-left text-xs text-[#444] hover:text-black"
+            >
+              <span class="w-4 h-4 rounded-full border border-black/20 inline-block shadow-sm" [style.background-color]="col.hex"></span>
+              <span [class]="catalog.selectedColors().includes(col.name) ? 'font-bold text-[#C5A059]' : ''">{{ col.name }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Clear All Filters Button -->
+      @if (catalog.hasActiveFilters()) {
+        <button
+          (click)="catalog.resetFilters()"
+          class="w-full text-center border border-[#EAE8E4] text-xs uppercase tracking-widest py-2 text-[#777] hover:bg-[#0D0D0D] hover:text-white transition-all"
+        >
+          Reset All Filters
+        </button>
+      }
+    </div>
+
+    <!-- Products Grid Display -->
+    <div class="lg:col-span-3">
+      @if (catalog.filteredProducts().length === 0) {
+        <div class="py-20 text-center space-y-4">
+          <p class="font-serif text-xl text-[#777]">No products match your selected criteria.</p>
+          <button (click)="catalog.resetFilters()" class="bg-[#0D0D0D] text-white text-xs uppercase tracking-widest px-6 py-3">
+            Reset Filters
+          </button>
+        </div>
+      } @else {
+        <div [class]="'grid gap-8 grid-cols-1 ' + gridClass()">
+          @for (prod of catalog.filteredProducts(); track prod.id) {
+            <app-product-card [product]="prod" />
+          }
+        </div>
+      }
+    </div>
+  </div>
+</main>

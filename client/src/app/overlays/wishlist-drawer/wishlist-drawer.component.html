@@ -1,0 +1,46 @@
+@if (ui.isWishlistOpen()) {
+  <div class="fixed inset-0 z-50 flex justify-end">
+    <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" (click)="ui.isWishlistOpen.set(false)"></div>
+
+    <div class="relative w-full max-w-md bg-[#FCFBFA] h-full shadow-2xl flex flex-col z-10 animate-slideLeft">
+      <div class="p-6 border-b border-[#EAE8E4] flex justify-between items-center">
+        <h3 class="font-serif text-xl text-[#111]">Wishlist ({{ wishlist.count() }})</h3>
+        <button (click)="ui.isWishlistOpen.set(false)" aria-label="Close wishlist"><app-icon name="x" cls="w-6 h-6 text-[#111]" /></button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-6 space-y-6">
+        @if (wishlist.products().length === 0) {
+          <div class="text-center py-12 space-y-4">
+            <app-icon name="heart" cls="w-10 h-10 text-[#CCC] mx-auto" />
+            <p class="text-xs text-[#888]">Your wishlist is empty.</p>
+            <button (click)="explore()" class="bg-[#0D0D0D] text-white text-xs uppercase tracking-widest px-6 py-3">
+              Discover The Collection
+            </button>
+          </div>
+        } @else {
+          @for (prod of wishlist.products(); track prod.id) {
+            <div class="flex gap-4 pb-4 border-b border-[#EAE8E4]">
+              <img
+                [src]="prod.images[0]"
+                [alt]="prod.name"
+                (click)="open(prod)"
+                class="w-20 h-24 object-cover rounded bg-[#F5F3EF] cursor-pointer"
+              />
+              <div class="flex-1 space-y-1">
+                <h4 (click)="open(prod)" class="font-serif text-sm text-[#111] cursor-pointer hover:text-[#C5A059]">{{ prod.name }}</h4>
+                <p class="text-[11px] text-[#777]">{{ prod.category }}</p>
+                <p class="text-xs font-semibold text-[#C5A059]">{{ currency.format(prod.price) }}</p>
+                <div class="flex items-center gap-4 pt-2">
+                  <button (click)="addToBag(prod)" class="text-[10px] uppercase tracking-widest font-semibold text-[#111] hover:text-[#C5A059]">
+                    + Add To Bag
+                  </button>
+                  <button (click)="wishlist.toggle(prod.id)" class="text-[#999] hover:text-red-600 text-[11px]">Remove</button>
+                </div>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </div>
+}

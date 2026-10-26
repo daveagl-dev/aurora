@@ -1,0 +1,36 @@
+@if (ui.isSizeGuideOpen()) {
+  <div class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" (click)="ui.isSizeGuideOpen.set(false)">
+    <div class="bg-white max-w-lg w-full rounded shadow-2xl p-6 sm:p-8 relative animate-scaleUp" (click)="$event.stopPropagation()">
+      <button (click)="ui.isSizeGuideOpen.set(false)" class="absolute top-4 right-4 text-[#111]" aria-label="Close size guide">
+        <app-icon name="x" cls="w-5 h-5" />
+      </button>
+      <span class="text-xs uppercase tracking-[0.3em] text-[#C5A059]">Find My Size</span>
+      <h3 class="font-serif text-2xl font-light text-[#111] mt-1 mb-5">Atelier Size Guide</h3>
+      <table class="w-full text-xs text-center">
+        <thead>
+          <tr class="uppercase tracking-wider text-[#888] border-b border-[#EAE8E4]">
+            <th class="py-2 font-semibold">Size</th>
+            <th class="py-2 font-semibold">EU</th>
+            <th class="py-2 font-semibold">Bust (cm)</th>
+            <th class="py-2 font-semibold">Waist (cm)</th>
+            <th class="py-2 font-semibold">Hips (cm)</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows; track row.size) {
+            <tr class="border-b border-[#EAE8E4] text-[#444]">
+              <td class="py-2 font-semibold text-[#111]">{{ row.size }}</td>
+              <td>{{ row.eu }}</td>
+              <td>{{ row.bust }}</td>
+              <td>{{ row.waist }}</td>
+              <td>{{ row.hips }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      <p class="text-[11px] text-[#777] mt-4 font-light leading-relaxed">
+        Between sizes? Our atelier recommends sizing up for a relaxed silhouette. Book a private fitting for bespoke adjustments.
+      </p>
+    </div>
+  </div>
+}

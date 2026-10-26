@@ -1,0 +1,30 @@
+<div [style.top]="spot().top" [style.left]="spot().left" class="absolute z-20 group">
+  <button
+    [class]="
+      'rounded-full bg-[#C5A059] text-white flex items-center justify-center animate-pulse shadow-lg ' +
+      (isMd() ? 'w-8 h-8' : 'w-7 h-7 hover:animate-none hover:scale-125 transition-all')
+    "
+    aria-label="Show product"
+  >
+    <app-icon name="plus" cls="w-4 h-4" />
+  </button>
+  <!-- Hotspot Hover Card -->
+  <div
+    [class]="
+      'absolute top-0 hidden group-hover:flex bg-white/95 backdrop-blur-md p-3 rounded shadow-2xl border border-[#EAE8E4] flex-col gap-1 z-30 ' +
+      (isMd() ? 'left-10 w-52' : 'left-8 w-48')
+    "
+  >
+    <p class="text-xs font-serif text-[#111] font-semibold">{{ spot().title }}</p>
+    <p class="text-xs text-[#C5A059] font-medium">{{ currency.format(spot().price) }}</p>
+    <button
+      (click)="open()"
+      [class]="
+        'text-[10px] uppercase tracking-widest bg-[#0D0D0D] text-white px-2 mt-1 rounded text-center hover:bg-[#C5A059] transition-colors ' +
+        (isMd() ? 'py-1' : 'py-1.5')
+      "
+    >
+      {{ actionLabel() }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,170 @@
+@if (product(); as p) {
+  <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+    <!-- Breadcrumb -->
+    <div class="text-xs text-[#888] flex items-center gap-2 mb-8 uppercase tracking-wider">
+      <span class="cursor-pointer hover:text-black" (click)="nav.goHome()">Home</span>
+      <span>/</span>
+      <span class="cursor-pointer hover:text-black" (click)="nav.goShop()">Catalog</span>
+      <span>/</span>
+      <span class="text-[#C5A059] font-semibold">{{ p.name }}</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <!-- Image Gallery Left -->
+      <div class="lg:col-span-7 space-y-4">
+        <div class="relative h-[600px] overflow-hidden rounded bg-[#F5F3EF]">
+          <img
+            [src]="p.images[activeImage()]"
+            [alt]="p.name"
+            class="w-full h-full object-cover transition-transform duration-500 hover:scale-105 cursor-zoom-in"
+          />
+          @if (p.isNew) {
+            <span class="absolute top-4 left-4 bg-[#0D0D0D] text-white text-[10px] uppercase tracking-widest px-3 py-1 font-semibold">
+              New Season
+            </span>
+          }
+        </div>
+
+        <!-- Thumbnails -->
+        <div class="grid grid-cols-3 gap-4">
+          @for (img of p.images; track $index) {
+            <div
+              (click)="activeImage.set($index)"
+              [class]="'h-32 rounded overflow-hidden bg-[#F5F3EF] cursor-pointer border ' + (activeImage() === $index ? 'border-[#C5A059]' : 'border-[#EAE8E4]')"
+            >
+              <img [src]="img" alt="" class="w-full h-full object-cover hover:opacity-80 transition-opacity" />
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Detail Panel Right -->
+      <div class="lg:col-span-5 space-y-6">
+        <div>
+          <span class="text-xs uppercase tracking-[0.3em] text-[#C5A059] font-medium block mb-1">{{ p.category }}</span>
+          <h2 class="font-serif text-3xl sm:text-4xl font-light text-[#111]">{{ p.name }}</h2>
+          <div class="flex items-center gap-3 mt-3">
+            <span class="text-2xl font-serif text-[#111]">{{ currency.format(p.price) }}</span>
+            <div class="flex items-center text-[#C5A059] text-xs">
+              <app-icon name="star" cls="w-4 h-4 fill-current" />
+              <span class="ml-1 text-[#111] font-semibold">{{ p.rating }}</span>
+              <span class="text-[#888] ml-1">({{ p.reviewCount }} reviews)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Installment Badge -->
+        <div class="bg-[#F9F8F6] p-3 rounded text-xs text-[#555] flex items-center justify-between border border-[#EAE8E4]">
+          <span>Or 4 interest-free payments of <strong>{{ currency.format(p.price / 4) }}</strong></span>
+          <span class="font-bold text-black tracking-widest uppercase text-[10px]">KLARNA.</span>
+        </div>
+
+        <p class="text-xs text-[#555] leading-relaxed font-light">{{ p.description }}</p>
+
+        <!-- Color Selector -->
+        <div>
+          <label class="text-xs uppercase tracking-widest text-[#111] font-semibold block mb-2">
+            Color: <span class="text-[#C5A059] font-normal">{{ selectedColor()?.name }}</span>
+          </label>
+          <div class="flex gap-3">
+            @for (c of p.colors; track c.name) {
+              <button
+                (click)="selectedColor.set(c)"
+                [class]="'w-7 h-7 rounded-full border-2 p-0.5 ' + (selectedColor()?.name === c.name ? 'border-[#C5A059]' : 'border-transparent')"
+                [attr.aria-label]="c.name"
+              >
+                <span class="w-full h-full rounded-full block border border-black/10" [style.background-color]="c.hex"></span>
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Size Selector -->
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <label class="text-xs uppercase tracking-widest text-[#111] font-semibold">Select Size</label>
+            <button (click)="ui.isSizeGuideOpen.set(true)" class="text-xs text-[#C5A059] underline hover:text-black transition-colors">
+              Find My Size Guide
+            </button>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            @for (sz of p.sizes; track sz) {
+              <button
+                (click)="selectedSize.set(sz)"
+                [class]="'text-xs px-4 py-2 border transition-all ' + (selectedSize() === sz ? 'bg-[#0D0D0D] text-white border-[#0D0D0D]' : 'border-[#EAE8E4] text-[#333] hover:border-black')"
+              >
+                {{ sz }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="space-y-3 pt-4">
+          <button
+            (click)="addToBag()"
+            class="w-full bg-[#0D0D0D] text-white hover:bg-[#C5A059] py-4 text-xs font-semibold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+          >
+            <app-icon name="shopping-bag" cls="w-4 h-4" /> Add To Shopping Bag
+          </button>
+          <button
+            (click)="expressCheckout()"
+            class="w-full border border-[#0D0D0D] text-[#0D0D0D] hover:bg-[#0D0D0D] hover:text-white py-3.5 text-xs font-semibold uppercase tracking-widest transition-colors"
+          >
+            Express Checkout
+          </button>
+        </div>
+
+        <!-- Sustainability & Guarantee -->
+        <div class="border-t border-b border-[#EAE8E4] py-4 space-y-2 text-xs text-[#666]">
+          <div class="flex items-center gap-2">
+            <app-icon name="shield-check" cls="w-4 h-4 text-[#C5A059]" />
+            <span>Sustainability Footprint: <strong>{{ p.sustainability }}</strong></span>
+          </div>
+          <div class="flex items-center gap-2">
+            <app-icon name="truck" cls="w-4 h-4 text-[#C5A059]" />
+            <span>Complimentary Courier Delivery &amp; Global Returns</span>
+          </div>
+        </div>
+
+        <!-- Accordion Specs -->
+        <div class="space-y-3">
+          <details class="group border-b border-[#EAE8E4] pb-3 cursor-pointer">
+            <summary class="flex justify-between items-center text-xs uppercase tracking-widest font-semibold text-[#111]">
+              Fabric &amp; Care
+              <app-icon name="chevron-down" cls="w-4 h-4 group-open:rotate-180 transition-transform" />
+            </summary>
+            <p class="text-xs text-[#666] mt-2 leading-relaxed font-light">{{ p.fabricCare }}</p>
+          </details>
+          <details class="group border-b border-[#EAE8E4] pb-3 cursor-pointer">
+            <summary class="flex justify-between items-center text-xs uppercase tracking-widest font-semibold text-[#111]">
+              Shipping &amp; Returns
+              <app-icon name="chevron-down" cls="w-4 h-4 group-open:rotate-180 transition-transform" />
+            </summary>
+            <p class="text-xs text-[#666] mt-2 leading-relaxed font-light">
+              All Aurora creations are delivered in signature black-label luxury boxes. Returns accepted within 30 days of receipt.
+            </p>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky Bottom Mobile Bar -->
+    <div class="fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-[#EAE8E4] p-3 md:hidden flex items-center justify-between shadow-2xl">
+      <div>
+        <p class="text-xs font-serif font-semibold">{{ p.name }}</p>
+        <p class="text-xs text-[#C5A059]">{{ currency.format(p.price) }}</p>
+      </div>
+      <button (click)="addToBag()" class="bg-[#0D0D0D] text-white text-[10px] uppercase tracking-widest px-6 py-3 font-semibold">
+        Add To Bag
+      </button>
+    </div>
+  </main>
+} @else {
+  <main class="flex-1 max-w-7xl mx-auto px-4 py-24 w-full text-center space-y-4">
+    <p class="font-serif text-xl text-[#777]">This piece could not be found.</p>
+    <button (click)="nav.goShop()" class="bg-[#0D0D0D] text-white text-xs uppercase tracking-widest px-8 py-4">
+      Back To Collections
+    </button>
+  </main>
+}
